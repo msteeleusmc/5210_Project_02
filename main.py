@@ -59,3 +59,4 @@ if __name__ == '__main__':
     warehouse.createGraph()
 
     # Print the warehouse
+    warehouse.printWarehouse(15)
