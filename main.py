@@ -163,40 +163,47 @@ class Orders:
 #                          Main function
 #######################################################################
 if __name__ == '__main__':
+    count = 0
+    root = 1
+    while count in range (0, 100):
+        orders = Orders(1)
+        order_array = []
+        order_size, order_division, order_array = orders.createOrder()
 
-    # Make a class object of the warehouse size 15
-    warehouse = Warehouse(16)
+        print("Size of order: ", order_size)
+        print("Order division: ", order_division)
+        print("Order shelves: ", order_array)
 
-    # Create the layout of the warehouse
-    warehouse.createGraph()
+        # Make a class object of the warehouse size 15
+        warehouse = Warehouse(16)
 
-    # Print the warehouse
-    #warehouse.printWarehouse(15)
-    target = 15
-    source = 1
-    maxDepth = 4
+        # Create the layout of the warehouse
+        warehouse.createGraph()
 
-    if warehouse.IDDFS(source, target, maxDepth) == True:
-        print("Warehouse worked: ", True)
-    else:
-        print("Warehouse worked: ", False)
+        source = root
+        target = order_division
+        maxDepth = 4
 
-    shelves = Shelves(64)
-    target = 63
-    source = 1
-    maxDepth = 6
+        if warehouse.IDDFS(source, target, maxDepth) == True:
+            print("Warehouse worked: ", True)
+        else:
+            print("Warehouse worked: ", False)
 
-    shelves.createGraph()
+        shelves = Shelves(64)
 
-    if shelves.shelvesIDDFS(source, target, maxDepth) == True:
-        print("Shelfs worked: ", True)
-    else:
-        print("Shelfs worked: ", False)
+        shelves.createGraph()
 
-    orders = Orders(1)
-    order_array = []
-    order_size, order_division, order_array = orders.createOrder()
+        shelf_source = 1
+        shelf_target = 0
+        shelf_depth = 6
 
-    print("Size of order: ", order_size)
-    print("Order division: ", order_division)
-    print("Order shelves: ", order_array)
+        for i in order_array:
+            shelf_target = i
+
+            if shelves.shelvesIDDFS(shelf_source, shelf_target, shelf_depth) == True:
+                print("Shelfs worked: ", True)
+            else:
+                print("Shelfs worked: ", False)
+
+
+        count += 1
