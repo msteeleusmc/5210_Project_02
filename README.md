@@ -17,3 +17,14 @@ Phase 1 cont'd:
 I decided to make a class versus just using function calls as done in Project 1. This of course
 takes an object oriented approach to control which data structures accesses data. By creating a 
 warehouse class, I would only be able to call those specific functions if intended too.
+
+####################################################################
+Phase 2:
+Created an IDS and DFS algorithm for the warehouse class to confirm a path existed between the 
+source node and the target node. After this was successful with the warehouse class, a shelves 
+class was then created to create a tree within the division for 63 shelves. This class also uses
+an IDS algorithm to search from node 1 to whichever shlef is the target node. The final thing done
+during this time, was creating an orders class to create a customers order per the requirements
+outlined in the project 2 description. When called, the class will generate an order size, then 
+a random division number, then random shleves not to exceed the size of the customers order. The
+customers order shall not be greater than size of 3.
