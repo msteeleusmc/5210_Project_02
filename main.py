@@ -163,12 +163,52 @@ class Shelves:
     # It uses recursive DLS()
     def shelvesIDS(self, src, target, maxDepth):
 
+        # used to store the path traveled
+        visited = [False] * (self.V)
+        parent = [-1] * (self.V)
+
+        # create a queue for search
+        q = []
+
+        # source node is appended first
+        q.append(source)
+        # mark the source as a visited node
+        visited[source] = True
+
         # Repeatedly depth-limit search till the
         # maximum depth
         for i in range(maxDepth):
             if (self.shelvesDLS(src, target, i)):
-                return True
-        return False
+                # return True
+                # run a while-loop for the queue
+                while q:
+                    # Dequeue a vertex from q[]
+                    dq = q.pop(0)
+
+                    # if dq == target then print the path
+                    if dq == target:
+                        return self.printPath(parent, dq)
+
+                    for i in self.shelves[dq]:
+                        if visited[i] == False:
+                            q.append(i)
+                            visited[i] = True
+                            parent[i] = dq
+
+    def printPath(self, source, x):
+        path_len = 1
+        if source[x] == -1 and x < self.V:
+            print(x)
+            return 0
+
+        temp = self.printPath(source, source[x])
+
+        path_len = temp + path_len
+
+        if x < self.V:
+            print(x)
+
+        return path_len
 
 #######################################################################
 #                      Customer Order Class
@@ -253,6 +293,8 @@ if __name__ == '__main__':
         else:
             pass#print("Warehouse worked: ", False)
 
+        print("\n")
+
         # create a shelves object
         shelves = Shelves(64)
         # create a shelf layout for the current division
@@ -266,6 +308,7 @@ if __name__ == '__main__':
         shelf_depth = 6
 
         # for-loop will run through each item in the order array to verify that the shelf was found
+        print("Shelfs:\n")
         for i in order_array:
             shelf_target = i
 
