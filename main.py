@@ -54,12 +54,52 @@ class Warehouse:
     # It uses recursive DLS()
     def IDS(self, src, target, maxDepth):
 
+        # used to store the path traveled
+        visited = [False] * (self.divisions)
+        parent = [-1] * (self.divisions)
+
+        # create a queue for search
+        q = []
+
+        # source node is appended first
+        q.append(source)
+        # mark the source as a visited node
+        visited[source] = True
+
         # Repeatedly depth-limit search till the
         # maximum depth
         for i in range(maxDepth):
             if (self.DLS(src, target, i)):
-                return True
-        return False
+                # return True
+                # run a while-loop for the queue
+                while q:
+                    # Dequeue a vertex from q[]
+                    dq = q.pop(0)
+
+                    # if dq == target then print the path
+                    if dq == target:
+                        return self.printPath(parent, dq)
+
+                    for i in self.warehouse[dq]:
+                        if visited[i] == False:
+                            q.append(i)
+                            visited[i] = True
+                            parent[i] = dq
+
+    def printPath(self, source, x):
+        path_len = 1
+        if source[x] == -1 and x < self.divisions:
+            print(x)
+            return 0
+
+        temp = self.printPath(source, source[x])
+
+        path_len = temp + path_len
+
+        if x < self.divisions:
+            print(x)
+
+        return path_len
 
     # Print the warehouse
     #def printWarehouse(self, V):
@@ -180,7 +220,7 @@ if __name__ == '__main__':
     root = 1
 
     # This while-loop runs until 100 customer orders are completed
-    while count in range (0, 100):
+    while count in range (0, 10):
         # orders creates a customer order instance
         orders = Orders(1)
         # order array will be used to track which shelves are in the division
@@ -189,9 +229,9 @@ if __name__ == '__main__':
         order_size, order_division, order_array = orders.createOrder()
 
         # print statement; delete later
-        print("Size of order: ", order_size)
-        print("Order division: ", order_division)
-        print("Order shelves: ", order_array)
+        # print("Size of order: ", order_size)
+        # print("Order division: ", order_division)
+        # print("Order shelves: ", order_array)
 
         # Make a class object of the warehouse size 15
         warehouse = Warehouse(16)
@@ -209,9 +249,9 @@ if __name__ == '__main__':
         # run the IDS algorithm to see if the target can be reached
         # from the current source node
         if warehouse.IDS(source, target, maxDepth) == True:
-            print("Warehouse worked: ", True)
+            pass#print("Warehouse worked: ", True)
         else:
-            print("Warehouse worked: ", False)
+            pass#print("Warehouse worked: ", False)
 
         # create a shelves object
         shelves = Shelves(64)
@@ -231,9 +271,10 @@ if __name__ == '__main__':
 
             # Using the same IDS algorithm as before
             if shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth) == True:
-                print("Shelfs worked: ", True)
+                pass#print("Shelfs worked: ", True)
             else:
-                print("Shelfs worked: ", False)
+                pass#print("Shelfs worked: ", False)
 
         # Increase the count after each order is completed
         count += 1
+        print("\n")
