@@ -1,4 +1,5 @@
 from collections import defaultdict
+import random
 
 #######################################################################
 #                           Warehouse Class
@@ -177,6 +178,39 @@ class Shelves:
         return False
 
 #######################################################################
+#                      Customer Order Class
+#######################################################################
+class Orders:
+    # Constructor function
+    def __init__(self, nodes):
+        # Define the number of divisions 1 - 15
+        self.V = nodes
+        # default dictionary to store graph/tree of warehouse
+        self.orders = defaultdict(list)
+
+    def orderSize(self):
+        order_size = random.randint(1, 3)
+        return order_size
+
+    def getDivision(self):
+        order_division = random.randint(1,15)
+        return order_division
+
+    def getShelves(self, order_size):
+        shelf_array = []
+        for i in range(0, order_size):
+            shelf_array.append(random.randint(1, 63))
+
+        return shelf_array
+
+    def createOrder(self):
+        order_size = self.orderSize()
+        order_division = self.getDivision()
+        shelf_array = self.getShelves(order_size)
+
+        return order_size, order_division, shelf_array;
+
+#######################################################################
 #                          Main function
 #######################################################################
 if __name__ == '__main__':
@@ -209,3 +243,11 @@ if __name__ == '__main__':
         print("Shelfs worked: ", True)
     else:
         print("Shelfs worked: ", False)
+
+    orders = Orders(1)
+    order_array = []
+    order_size, order_division, order_array = orders.createOrder()
+
+    print("Size of order: ", order_size)
+    print("Order division: ", order_division)
+    print("Order shelves: ", order_array)
