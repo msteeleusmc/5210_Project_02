@@ -23,6 +23,7 @@ class Warehouse:
     def createGraph(self):
         count = 1
         j = 1
+        # for-loop creates the tree and edges
         for i in range(2, 16):
             if count == 1:
                 self.addEdge(j, i)
@@ -35,6 +36,7 @@ class Warehouse:
                 self.addEdge(j, i)
                 count += 1
 
+    # This funciton called to find the target from the source
     def DLS(self, src, target, maxDepth):
 
         if src == target: return True
@@ -48,9 +50,9 @@ class Warehouse:
                 return True
         return False
 
-    # IDDFS to search if target is reachable from v.
+    # IDS to search if target is reachable from v.
     # It uses recursive DLS()
-    def IDDFS(self, src, target, maxDepth):
+    def IDS(self, src, target, maxDepth):
 
         # Repeatedly depth-limit search till the
         # maximum depth
@@ -90,6 +92,7 @@ class Shelves:
     def createGraph(self):
         count = 1
         j = 1
+        # for-loop creates the tree and its edges
         for i in range(2, 64):
             if count == 1:
                 self.addEdge(j, i)
@@ -102,6 +105,7 @@ class Shelves:
                 self.addEdge(j, i)
                 count += 1
 
+    # Called to fund the target from the source
     def shelvesDLS(self, src, target, maxDepth):
 
         if src == target: return True
@@ -117,7 +121,7 @@ class Shelves:
 
     # IDDFS to search if target is reachable from v.
     # It uses recursive DLS()
-    def shelvesIDDFS(self, src, target, maxDepth):
+    def shelvesIDS(self, src, target, maxDepth):
 
         # Repeatedly depth-limit search till the
         # maximum depth
@@ -137,14 +141,18 @@ class Orders:
         # default dictionary to store graph/tree of warehouse
         self.orders = defaultdict(list)
 
+    # This function will return the random order size
     def orderSize(self):
         order_size = random.randint(1, 3)
         return order_size
 
+    # This function will return a random division number
     def getDivision(self):
         order_division = random.randint(1,15)
         return order_division
 
+    # This function will generate a random array of shelf numbers
+    # equal to the size of the order
     def getShelves(self, order_size):
         shelf_array = []
         for i in range(0, order_size):
@@ -152,6 +160,8 @@ class Orders:
 
         return shelf_array
 
+    # This function calls all others to create a customer order
+    # Returns to the main function
     def createOrder(self):
         order_size = self.orderSize()
         order_division = self.getDivision()
@@ -163,13 +173,22 @@ class Orders:
 #                          Main function
 #######################################################################
 if __name__ == '__main__':
+    # count helps track the number of customer orders.
     count = 0
+    # root is the starting node. It will update as the robot
+    # transistions the warehouse with a new starting node
     root = 1
+
+    # This while-loop runs until 100 customer orders are completed
     while count in range (0, 100):
+        # orders creates a customer order instance
         orders = Orders(1)
+        # order array will be used to track which shelves are in the division
         order_array = []
+        # return values to know the size, division , and shelves for the order
         order_size, order_division, order_array = orders.createOrder()
 
+        # print statement; delete later
         print("Size of order: ", order_size)
         print("Order division: ", order_division)
         print("Order shelves: ", order_array)
@@ -180,30 +199,41 @@ if __name__ == '__main__':
         # Create the layout of the warehouse
         warehouse.createGraph()
 
+        # source node is the current root (position) of the robot
         source = root
+        # target is the destination node (division) for the order
         target = order_division
+        # max depth of the division tree is 4
         maxDepth = 4
 
-        if warehouse.IDDFS(source, target, maxDepth) == True:
+        # run the IDS algorithm to see if the target can be reached
+        # from the current source node
+        if warehouse.IDS(source, target, maxDepth) == True:
             print("Warehouse worked: ", True)
         else:
             print("Warehouse worked: ", False)
 
+        # create a shelves object
         shelves = Shelves(64)
-
+        # create a shelf layout for the current division
         shelves.createGraph()
 
+        # the shelf root always begins at 1 and updates based on filling the array
         shelf_source = 1
+        # the target will be an item in the order array
         shelf_target = 0
+        # the depth will be 6 for 63 nodes
         shelf_depth = 6
 
+        # for-loop will run through each item in the order array to verify that the shelf was found
         for i in order_array:
             shelf_target = i
 
-            if shelves.shelvesIDDFS(shelf_source, shelf_target, shelf_depth) == True:
+            # Using the same IDS algorithm as before
+            if shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth) == True:
                 print("Shelfs worked: ", True)
             else:
                 print("Shelfs worked: ", False)
 
-
+        # Increase the count after each order is completed
         count += 1
