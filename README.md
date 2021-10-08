@@ -28,3 +28,14 @@ during this time, was creating an orders class to create a customers order per t
 outlined in the project 2 description. When called, the class will generate an order size, then 
 a random division number, then random shleves not to exceed the size of the customers order. The
 customers order shall not be greater than size of 3.
+
+###################################################################
+Phase 2 cont'd:
+The warehouse tree can now traverse to the selected division, and then remain there for the next customers order.
+It will then start from that position and print the path to the newly seelcted division. The shelf class then takes effect,
+always starting at shelf number 1. It will then iterate through a loop until all shelves are reached. What needs to happen
+now is, I will store the sheld path as one long string until the entire order is completed. Then return to 1.
+Next phase, I will create a method to store all of this data to a CSV file so that results may be compared. Image supports
+what has been accomplished.
+![Screenshot (14)](https://user-images.githubusercontent.com/56514179/136617378-c46b9505-7a1d-4458-ab71-a7f3b5cca83c.png)
+
