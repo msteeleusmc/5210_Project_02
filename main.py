@@ -179,6 +179,7 @@ class Shelves:
                             visited[i] = True
                             parent[i] = dq
 
+    # function will print the path of the shelf traversal from 1 to target
     def printPath(self, source, x, path):
         path_len = 1
         if source[x] == -1 and x < self.V:
@@ -302,6 +303,7 @@ if __name__ == '__main__':
                 ################################################
                 warehouse.altPrintPath(warehousePath)
 
+        # assign the new root node as the current position
         warehouse_root = order_division
 
         # create a shelves object
@@ -324,8 +326,9 @@ if __name__ == '__main__':
             shelfPath = shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth)
             print(shelfPath)
 
+        # re-assign the shelf root as the first node shelf
         shelf_root = 1
 
         print("\n\n")
-
+        # Increase the count
         count += 1
