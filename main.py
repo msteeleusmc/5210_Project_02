@@ -1,9 +1,6 @@
 from collections import defaultdict
 import random
 
-#######################################################################
-#                           Warehouse Class
-#######################################################################
 class Warehouse:
 
     # Constructor function
@@ -52,11 +49,12 @@ class Warehouse:
 
     # IDS to search if target is reachable from v.
     # It uses recursive DLS()
-    def IDS(self, src, target, maxDepth):
+    def IDS(self, source, target, maxDepth):
 
         # used to store the path traveled
         visited = [False] * (self.divisions)
         parent = [-1] * (self.divisions)
+        path = []
 
         # create a queue for search
         q = []
@@ -69,47 +67,31 @@ class Warehouse:
         # Repeatedly depth-limit search till the
         # maximum depth
         for i in range(maxDepth):
-            if (self.DLS(src, target, i)):
-                # return True
-                # run a while-loop for the queue
-                while q:
-                    # Dequeue a vertex from q[]
-                    dq = q.pop(0)
+            if (self.DLS(source, target, i)):
+                path = self.alternateDFS(self.warehouse, source, target, path)
+                print(path)
+                return path
+            else:
+                path = self.alternateDFS(self.warehouse, source, target, path)
+                print(path)
+                return path
 
-                    # if dq == target then print the path
-                    if dq == target:
-                        return self.printPath(parent, dq)
 
-                    for i in self.warehouse[dq]:
-                        if visited[i] == False:
-                            q.append(i)
-                            visited[i] = True
-                            parent[i] = dq
+    def alternateDFS(self, warehouse, source, target, path=[]):
+        path = path + [source]
 
-    def printPath(self, source, x):
-        path_len = 1
-        if source[x] == -1 and x < self.divisions:
-            print(x)
-            return 0
+        if source == target:
+            return path
 
-        temp = self.printPath(source, source[x])
+        for node in self.warehouse[source]:
+            if node not in path:
+                newpath = self.alternateDFS(warehouse, node, target, path)
+                if newpath:
+                    return newpath
 
-        path_len = temp + path_len
-
-        if x < self.divisions:
-            print(x)
-
-        return path_len
-
-    # Print the warehouse
-    #def printWarehouse(self, V):
-    #    for i in range(1, V+1):
-    #        print(i, " shares edge with:")
-
-            #for j in self.warehouse[i]:
-             #   A = j[0]
-              #  weight = j[1]
-               # print("\t", A, " and edge weight is: ", weight)
+    def altPrintPath(selfself, path):
+        for i in path:
+            print(i)
 
 #######################################################################
 #                           Shelf Class
@@ -161,11 +143,12 @@ class Shelves:
 
     # IDDFS to search if target is reachable from v.
     # It uses recursive DLS()
-    def shelvesIDS(self, src, target, maxDepth):
+    def shelvesIDS(self, source, target, maxDepth):
 
         # used to store the path traveled
         visited = [False] * (self.V)
         parent = [-1] * (self.V)
+        path = []
 
         # create a queue for search
         q = []
@@ -178,16 +161,17 @@ class Shelves:
         # Repeatedly depth-limit search till the
         # maximum depth
         for i in range(maxDepth):
-            if (self.shelvesDLS(src, target, i)):
+            if (self.shelvesDLS(source, target, i)):
                 # return True
                 # run a while-loop for the queue
                 while q:
                     # Dequeue a vertex from q[]
                     dq = q.pop(0)
-
                     # if dq == target then print the path
                     if dq == target:
-                        return self.printPath(parent, dq)
+                        self.printPath(parent, dq, path)
+                        self.returnToSource(path)
+                        return path
 
                     for i in self.shelves[dq]:
                         if visited[i] == False:
@@ -195,20 +179,34 @@ class Shelves:
                             visited[i] = True
                             parent[i] = dq
 
-    def printPath(self, source, x):
+    def printPath(self, source, x, path):
         path_len = 1
         if source[x] == -1 and x < self.V:
+            path.append(x)
             print(x)
             return 0
 
-        temp = self.printPath(source, source[x])
-
+        temp = self.printPath(source, source[x], path)
         path_len = temp + path_len
 
         if x < self.V:
+            path.append(x)
             print(x)
 
         return path_len
+
+    # function will make a path list going from 1 to source back to 1
+    def returnToSource(self, path):
+        temp = path
+        for i in reversed(temp):
+            path.append(i)
+
+        for i in range(1,len(path)-1):
+            if path[i] == path[i-1]:
+                path.remove(path[i])
+
+        return path
+
 
 #######################################################################
 #                      Customer Order Class
@@ -249,6 +247,7 @@ class Orders:
 
         return order_size, order_division, shelf_array;
 
+
 #######################################################################
 #                          Main function
 #######################################################################
@@ -257,21 +256,23 @@ if __name__ == '__main__':
     count = 0
     # root is the starting node. It will update as the robot
     # transistions the warehouse with a new starting node
-    root = 1
+    warehouse_root = 1
+    shelf_root = 1
 
     # This while-loop runs until 100 customer orders are completed
-    while count in range (0, 10):
+    while count in range (0, 5):
         # orders creates a customer order instance
         orders = Orders(1)
         # order array will be used to track which shelves are in the division
         order_array = []
         # return values to know the size, division , and shelves for the order
         order_size, order_division, order_array = orders.createOrder()
+        order_array.sort()
 
         # print statement; delete later
-        # print("Size of order: ", order_size)
-        # print("Order division: ", order_division)
-        # print("Order shelves: ", order_array)
+        print("Size of order: ", order_size)
+        print("Order division: ", order_division)
+        print("Order shelves: ", order_array)
 
         # Make a class object of the warehouse size 15
         warehouse = Warehouse(16)
@@ -280,20 +281,28 @@ if __name__ == '__main__':
         warehouse.createGraph()
 
         # source node is the current root (position) of the robot
-        source = root
+        source = warehouse_root
         # target is the destination node (division) for the order
         target = order_division
         # max depth of the division tree is 4
         maxDepth = 4
 
+        print("Warehouse:")
         # run the IDS algorithm to see if the target can be reached
         # from the current source node
-        if warehouse.IDS(source, target, maxDepth) == True:
-            pass#print("Warehouse worked: ", True)
+        warehousePath = warehouse.IDS(source, target, maxDepth)
+        # if length > 0 print path this way
+        if warehousePath is None:
+            pass
         else:
-            pass#print("Warehouse worked: ", False)
+            if len(warehousePath) > 0:
+                ################################################
+                # Create a csv object for storing the warehouse
+                # path traveled
+                ################################################
+                warehouse.altPrintPath(warehousePath)
 
-        print("\n")
+        warehouse_root = order_division
 
         # create a shelves object
         shelves = Shelves(64)
@@ -301,23 +310,22 @@ if __name__ == '__main__':
         shelves.createGraph()
 
         # the shelf root always begins at 1 and updates based on filling the array
-        shelf_source = 1
+        shelf_source = shelf_root
         # the target will be an item in the order array
         shelf_target = 0
         # the depth will be 6 for 63 nodes
         shelf_depth = 6
 
         # for-loop will run through each item in the order array to verify that the shelf was found
-        print("Shelfs:\n")
         for i in order_array:
             shelf_target = i
-
+            print("Shelf:")
             # Using the same IDS algorithm as before
-            if shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth) == True:
-                pass#print("Shelfs worked: ", True)
-            else:
-                pass#print("Shelfs worked: ", False)
+            shelfPath = shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth)
+            print(shelfPath)
 
-        # Increase the count after each order is completed
+        shelf_root = 1
+
+        print("\n\n")
+
         count += 1
-        print("\n")
