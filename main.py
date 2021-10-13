@@ -294,7 +294,6 @@ if __name__ == '__main__':
         # max depth of the division tree is 4
         maxDepth = 4
 
-        #print("Warehouse:")
         # run the IDS algorithm to see if the target can be reached
         # from the current source node
         warehousePath = warehouse.IDS(source, target, maxDepth)
@@ -304,11 +303,6 @@ if __name__ == '__main__':
         else:
             if len(warehousePath) > 0:
                 print("Warehouse:\n", warehousePath)
-                ################################################
-                # Create a csv object for storing the warehouse
-                # path traveled
-                ################################################
-                #warehouse.altPrintPath(warehousePath)
 
         # assign the new root node as the current position
         warehouse_root = order_division
@@ -346,14 +340,12 @@ if __name__ == '__main__':
             else:
                 temp -= 1
 
-
-        #print("Shelf Path:\n", newPath)
-        # CSV STUFF
-
+        # Create data structures for the csv file
         header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Shelf Path']
         data = [order_size, order_division, warehousePath[0], order_array, warehousePath, newPath]
         csv_path = "customer_order.csv"
 
+        # Write to the csv file
         if os.path.exists(csv_path):
             with open('customer_order.csv', 'a', encoding='UTF8', newline='') as f:
                 writer = csv.writer(f)
