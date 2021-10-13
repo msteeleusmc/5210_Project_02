@@ -69,11 +69,11 @@ class Warehouse:
         for i in range(maxDepth):
             if (self.DLS(source, target, i)):
                 path = self.alternateDFS(self.warehouse, source, target, path)
-                print(path)
+                #print(path)
                 return path
             else:
                 path = self.alternateDFS(self.warehouse, source, target, path)
-                print(path)
+                #print(path)
                 return path
 
 
@@ -162,6 +162,14 @@ class Shelves:
         # maximum depth
         for i in range(maxDepth):
             if (self.shelvesDLS(source, target, i)):
+                path = self.alternateDFS(self.shelves, source, target, path)
+                #print(path)
+                return path
+            else:
+                path = self.alternateDFS(self.shelves, source, target, path)
+                #print(path)
+                return path
+                """
                 # return True
                 # run a while-loop for the queue
                 while q:
@@ -170,21 +178,32 @@ class Shelves:
                     # if dq == target then print the path
                     if dq == target:
                         self.printPath(parent, dq, path)
-                        self.returnToSource(path)
+                        #self.returnToSource(path)
                         return path
 
                     for i in self.shelves[dq]:
                         if visited[i] == False:
                             q.append(i)
                             visited[i] = True
-                            parent[i] = dq
+                            parent[i] = dq"""
+    def alternateDFS(self, shelves, source, target, path=[]):
+        path = path + [source]
+
+        if source == target:
+            return path
+
+        for node in self.shelves[source]:
+            if node not in path:
+                newpath = self.alternateDFS(shelves, node, target, path)
+                if newpath:
+                    return newpath
 
     # function will print the path of the shelf traversal from 1 to target
     def printPath(self, source, x, path):
         path_len = 1
         if source[x] == -1 and x < self.V:
             path.append(x)
-            print(x)
+            #print(x)
             return 0
 
         temp = self.printPath(source, source[x], path)
@@ -192,12 +211,23 @@ class Shelves:
 
         if x < self.V:
             path.append(x)
-            print(x)
+            #print(x)
 
         return path_len
 
     # function will make a path list going from 1 to source back to 1
-    def returnToSource(self, path):
+    def returnToSource(self, shelves, source, target, path=[]):
+        path = path + [source]
+
+        if source == target:
+            return path
+
+        for node in self.shelves[source]:
+            if node not in path:
+                newpath = self.returnToSource(shelves, node, target, path)
+                if newpath:
+                    return newpath
+        """
         temp = path
         for i in reversed(temp):
             path.append(i)
@@ -207,6 +237,7 @@ class Shelves:
                 path.remove(path[i])
 
         return path
+        """
 
 
 #######################################################################
@@ -288,7 +319,7 @@ if __name__ == '__main__':
         # max depth of the division tree is 4
         maxDepth = 4
 
-        print("Warehouse:")
+        #print("Warehouse:")
         # run the IDS algorithm to see if the target can be reached
         # from the current source node
         warehousePath = warehouse.IDS(source, target, maxDepth)
@@ -297,11 +328,12 @@ if __name__ == '__main__':
             pass
         else:
             if len(warehousePath) > 0:
+                print("Warehouse:\n", warehousePath)
                 ################################################
                 # Create a csv object for storing the warehouse
                 # path traveled
                 ################################################
-                warehouse.altPrintPath(warehousePath)
+                #warehouse.altPrintPath(warehousePath)
 
         # assign the new root node as the current position
         warehouse_root = order_division
@@ -318,14 +350,29 @@ if __name__ == '__main__':
         # the depth will be 6 for 63 nodes
         shelf_depth = 6
 
+        endShelves = False
+        newPath = []
         # for-loop will run through each item in the order array to verify that the shelf was found
         for i in order_array:
             shelf_target = i
-            print("Shelf:")
             # Using the same IDS algorithm as before
             shelfPath = shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth)
-            print(shelfPath)
+            shelf_source = shelf_target
+            newPath = newPath + shelfPath
 
+        shelfPath = shelves.shelvesIDS(shelf_source, shelf_root, shelf_depth)
+        newPath = newPath + shelfPath
+
+        temp = len(newPath) - 1
+        while temp > 0:
+            if newPath[temp] == newPath[temp - 1]:
+                newPath.remove(newPath[temp])
+                temp = len(newPath) - 1
+            else:
+                temp -= 1
+
+
+        print("Shelf Path:\n", newPath)
         # re-assign the shelf root as the first node shelf
         shelf_root = 1
 
