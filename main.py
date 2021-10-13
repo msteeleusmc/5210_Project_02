@@ -11,6 +11,7 @@ class Warehouse:
         self.divisions = nodes
         # default dictionary to store graph/tree of warehouse
         self.warehouse = defaultdict(list)
+        self.cost = 0
 
     # Function will add edges to the graph and their weights
     def addEdge(self, A, B):
@@ -91,9 +92,39 @@ class Warehouse:
                 if newpath:
                     return newpath
 
-    #def altPrintPath(selfself, path):
-     #   for i in path:
-      #      print(i)
+    def getCost(self, pathWeights, w_cost):
+        # For loop will check the pathWeights and create a summation for total cost
+        for i in pathWeights:
+            if i == [1, 2] or i == [2, 1]:
+                w_cost += 20
+            if i == [1, 3] or i == [3, 1]:
+                w_cost += 20
+            if i == [2, 4] or i == [4, 2]:
+                w_cost += 20
+            if i == [2, 5] or i == [5, 2]:
+                w_cost += 30
+            if i == [3, 6] or i == [6, 3]:
+                w_cost += 40
+            if i == [3, 7] or i == [7, 3]:
+                w_cost += 10
+            if i == [4, 8] or i == [8, 4]:
+                w_cost += 10
+            if i == [4, 9] or i == [9, 4]:
+                w_cost += 20
+            if i == [5, 10] or i == [10, 5]:
+                w_cost += 30
+            if i == [5, 11] or i == [11, 5]:
+                w_cost += 20
+            if i == [6, 12] or i == [12, 6]:
+                w_cost += 30
+            if i == [6, 13] or i == [13, 6]:
+                w_cost += 20
+            if i == [7, 14] or i == [14, 7]:
+                w_cost += 20
+            if i == [7, 15] or i == [15, 7]:
+                w_cost += 20
+
+        return w_cost
 
 #######################################################################
 #                           Shelf Class
@@ -182,39 +213,6 @@ class Shelves:
                 if newpath:
                     return newpath
 
-    """
-    # function will print the path of the shelf traversal from 1 to target
-    def printPath(self, source, x, path):
-        path_len = 1
-        if source[x] == -1 and x < self.V:
-            path.append(x)
-            #print(x)
-            return 0
-
-        temp = self.printPath(source, source[x], path)
-        path_len = temp + path_len
-
-        if x < self.V:
-            path.append(x)
-            #print(x)
-
-        return path_len
-    """
-
-    # function will make a path list going from 1 to source back to 1
-    def returnToSource(self, shelves, source, target, path=[]):
-        path = path + [source]
-
-        if source == target:
-            return path
-
-        for node in self.shelves[source]:
-            if node not in path:
-                newpath = self.returnToSource(shelves, node, target, path)
-                if newpath:
-                    return newpath
-
-
 #######################################################################
 #                      Customer Order Class
 #######################################################################
@@ -276,11 +274,6 @@ if __name__ == '__main__':
         order_size, order_division, order_array = orders.createOrder()
         order_array.sort()
 
-        # print statement; delete later
-        print("Size of order: ", order_size)
-        print("Order division: ", order_division)
-        print("Order shelves: ", order_array)
-
         # Make a class object of the warehouse size 15
         warehouse = Warehouse(16)
 
@@ -297,12 +290,6 @@ if __name__ == '__main__':
         # run the IDS algorithm to see if the target can be reached
         # from the current source node
         warehousePath = warehouse.IDS(source, target, maxDepth)
-        # if length > 0 print path this way
-        if warehousePath is None:
-            pass
-        else:
-            if len(warehousePath) > 0:
-                print("Warehouse:\n", warehousePath)
 
         # assign the new root node as the current position
         warehouse_root = order_division
@@ -340,9 +327,24 @@ if __name__ == '__main__':
             else:
                 temp -= 1
 
+        # Create a copy of the current warehouse path
+        tempWareHousePath = warehousePath.copy()
+
+        # Create a list object to store a list of weights
+        pathWeights = []
+        w_cost = 0
+
+        # While-loop will iterate through the new list creating tuples
+        while len(tempWareHousePath) > 1:
+            pathWeights.append([tempWareHousePath[0], tempWareHousePath[1]])
+            tempWareHousePath.pop(0)
+
+        # Call function to return the total path cost for the divisions
+        w_cost = warehouse.getCost(pathWeights, w_cost)
+
         # Create data structures for the csv file
-        header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Shelf Path']
-        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, newPath]
+        header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Warehouse Path Cost', 'Shelf Path', 'Shelf Path Cost']
+        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, w_cost, newPath, len(newPath)]
         csv_path = "customer_order.csv"
 
         # Write to the csv file
@@ -361,6 +363,5 @@ if __name__ == '__main__':
         # re-assign the shelf root as the first node shelf
         shelf_root = 1
 
-        print("\n\n")
         # Increase the count
         count += 1
