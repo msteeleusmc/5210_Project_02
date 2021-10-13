@@ -1,5 +1,7 @@
 from collections import defaultdict
 import random
+import csv
+import os
 
 class Warehouse:
 
@@ -69,11 +71,11 @@ class Warehouse:
         for i in range(maxDepth):
             if (self.DLS(source, target, i)):
                 path = self.alternateDFS(self.warehouse, source, target, path)
-                print(path)
+                #print(path)
                 return path
             else:
                 path = self.alternateDFS(self.warehouse, source, target, path)
-                print(path)
+                #print(path)
                 return path
 
 
@@ -89,9 +91,9 @@ class Warehouse:
                 if newpath:
                     return newpath
 
-    def altPrintPath(selfself, path):
-        for i in path:
-            print(i)
+    #def altPrintPath(selfself, path):
+     #   for i in path:
+      #      print(i)
 
 #######################################################################
 #                           Shelf Class
@@ -162,29 +164,31 @@ class Shelves:
         # maximum depth
         for i in range(maxDepth):
             if (self.shelvesDLS(source, target, i)):
-                # return True
-                # run a while-loop for the queue
-                while q:
-                    # Dequeue a vertex from q[]
-                    dq = q.pop(0)
-                    # if dq == target then print the path
-                    if dq == target:
-                        self.printPath(parent, dq, path)
-                        self.returnToSource(path)
-                        return path
+                path = self.alternateDFS(self.shelves, source, target, path)
+                return path
+            else:
+                path = self.alternateDFS(self.shelves, source, target, path)
+                return path
 
-                    for i in self.shelves[dq]:
-                        if visited[i] == False:
-                            q.append(i)
-                            visited[i] = True
-                            parent[i] = dq
+    def alternateDFS(self, shelves, source, target, path=[]):
+        path = path + [source]
 
+        if source == target:
+            return path
+
+        for node in self.shelves[source]:
+            if node not in path:
+                newpath = self.alternateDFS(shelves, node, target, path)
+                if newpath:
+                    return newpath
+
+    """
     # function will print the path of the shelf traversal from 1 to target
     def printPath(self, source, x, path):
         path_len = 1
         if source[x] == -1 and x < self.V:
             path.append(x)
-            print(x)
+            #print(x)
             return 0
 
         temp = self.printPath(source, source[x], path)
@@ -192,21 +196,23 @@ class Shelves:
 
         if x < self.V:
             path.append(x)
-            print(x)
+            #print(x)
 
         return path_len
+    """
 
     # function will make a path list going from 1 to source back to 1
-    def returnToSource(self, path):
-        temp = path
-        for i in reversed(temp):
-            path.append(i)
+    def returnToSource(self, shelves, source, target, path=[]):
+        path = path + [source]
 
-        for i in range(1,len(path)-1):
-            if path[i] == path[i-1]:
-                path.remove(path[i])
+        if source == target:
+            return path
 
-        return path
+        for node in self.shelves[source]:
+            if node not in path:
+                newpath = self.returnToSource(shelves, node, target, path)
+                if newpath:
+                    return newpath
 
 
 #######################################################################
@@ -261,7 +267,7 @@ if __name__ == '__main__':
     shelf_root = 1
 
     # This while-loop runs until 100 customer orders are completed
-    while count in range (0, 5):
+    while count in range (0, 100):
         # orders creates a customer order instance
         orders = Orders(1)
         # order array will be used to track which shelves are in the division
@@ -288,7 +294,6 @@ if __name__ == '__main__':
         # max depth of the division tree is 4
         maxDepth = 4
 
-        print("Warehouse:")
         # run the IDS algorithm to see if the target can be reached
         # from the current source node
         warehousePath = warehouse.IDS(source, target, maxDepth)
@@ -297,11 +302,7 @@ if __name__ == '__main__':
             pass
         else:
             if len(warehousePath) > 0:
-                ################################################
-                # Create a csv object for storing the warehouse
-                # path traveled
-                ################################################
-                warehouse.altPrintPath(warehousePath)
+                print("Warehouse:\n", warehousePath)
 
         # assign the new root node as the current position
         warehouse_root = order_division
@@ -318,13 +319,44 @@ if __name__ == '__main__':
         # the depth will be 6 for 63 nodes
         shelf_depth = 6
 
+        endShelves = False
+        newPath = []
         # for-loop will run through each item in the order array to verify that the shelf was found
         for i in order_array:
             shelf_target = i
-            print("Shelf:")
             # Using the same IDS algorithm as before
             shelfPath = shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth)
-            print(shelfPath)
+            shelf_source = shelf_target
+            newPath = newPath + shelfPath
+
+        shelfPath = shelves.shelvesIDS(shelf_source, shelf_root, shelf_depth)
+        newPath = newPath + shelfPath
+
+        temp = len(newPath) - 1
+        while temp > 0:
+            if newPath[temp] == newPath[temp - 1]:
+                newPath.remove(newPath[temp])
+                temp = len(newPath) - 1
+            else:
+                temp -= 1
+
+        # Create data structures for the csv file
+        header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Shelf Path']
+        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, newPath]
+        csv_path = "customer_order.csv"
+
+        # Write to the csv file
+        if os.path.exists(csv_path):
+            with open('customer_order.csv', 'a', encoding='UTF8', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(data)
+                f.close()
+        else:
+            with open('customer_order.csv', 'a', encoding='UTF8', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerow(data)
+                f.close()
 
         # re-assign the shelf root as the first node shelf
         shelf_root = 1
