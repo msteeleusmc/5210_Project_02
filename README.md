@@ -39,3 +39,7 @@ Next phase, I will create a method to store all of this data to a CSV file so th
 what has been accomplished.
 ![Screenshot (14)](https://user-images.githubusercontent.com/56514179/136617378-c46b9505-7a1d-4458-ab71-a7f3b5cca83c.png)
 
+###################################################################
+Phase 3:
+I have added methods to store all crucial data into the csv file. Path cost is also stored for the traversal between divisions
+and the shelves. Next, the shortest and longest path will be retrieved from the csv file, and the average too.
