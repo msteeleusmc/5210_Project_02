@@ -1,5 +1,7 @@
 from collections import defaultdict
 import random
+import csv
+import os
 
 class Warehouse:
 
@@ -89,9 +91,9 @@ class Warehouse:
                 if newpath:
                     return newpath
 
-    def altPrintPath(selfself, path):
-        for i in path:
-            print(i)
+    #def altPrintPath(selfself, path):
+     #   for i in path:
+      #      print(i)
 
 #######################################################################
 #                           Shelf Class
@@ -163,29 +165,11 @@ class Shelves:
         for i in range(maxDepth):
             if (self.shelvesDLS(source, target, i)):
                 path = self.alternateDFS(self.shelves, source, target, path)
-                #print(path)
                 return path
             else:
                 path = self.alternateDFS(self.shelves, source, target, path)
-                #print(path)
                 return path
-                """
-                # return True
-                # run a while-loop for the queue
-                while q:
-                    # Dequeue a vertex from q[]
-                    dq = q.pop(0)
-                    # if dq == target then print the path
-                    if dq == target:
-                        self.printPath(parent, dq, path)
-                        #self.returnToSource(path)
-                        return path
 
-                    for i in self.shelves[dq]:
-                        if visited[i] == False:
-                            q.append(i)
-                            visited[i] = True
-                            parent[i] = dq"""
     def alternateDFS(self, shelves, source, target, path=[]):
         path = path + [source]
 
@@ -198,6 +182,7 @@ class Shelves:
                 if newpath:
                     return newpath
 
+    """
     # function will print the path of the shelf traversal from 1 to target
     def printPath(self, source, x, path):
         path_len = 1
@@ -214,6 +199,7 @@ class Shelves:
             #print(x)
 
         return path_len
+    """
 
     # function will make a path list going from 1 to source back to 1
     def returnToSource(self, shelves, source, target, path=[]):
@@ -227,17 +213,6 @@ class Shelves:
                 newpath = self.returnToSource(shelves, node, target, path)
                 if newpath:
                     return newpath
-        """
-        temp = path
-        for i in reversed(temp):
-            path.append(i)
-
-        for i in range(1,len(path)-1):
-            if path[i] == path[i-1]:
-                path.remove(path[i])
-
-        return path
-        """
 
 
 #######################################################################
@@ -292,7 +267,7 @@ if __name__ == '__main__':
     shelf_root = 1
 
     # This while-loop runs until 100 customer orders are completed
-    while count in range (0, 5):
+    while count in range (0, 100):
         # orders creates a customer order instance
         orders = Orders(1)
         # order array will be used to track which shelves are in the division
@@ -372,7 +347,25 @@ if __name__ == '__main__':
                 temp -= 1
 
 
-        print("Shelf Path:\n", newPath)
+        #print("Shelf Path:\n", newPath)
+        # CSV STUFF
+
+        header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Shelf Path']
+        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, newPath]
+        csv_path = "customer_order.csv"
+
+        if os.path.exists(csv_path):
+            with open('customer_order.csv', 'a', encoding='UTF8', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(data)
+                f.close()
+        else:
+            with open('customer_order.csv', 'a', encoding='UTF8', newline='') as f:
+                writer = csv.writer(f)
+                writer.writerow(header)
+                writer.writerow(data)
+                f.close()
+
         # re-assign the shelf root as the first node shelf
         shelf_root = 1
 
