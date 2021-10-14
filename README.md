@@ -43,3 +43,11 @@ what has been accomplished.
 Phase 3:
 I have added methods to store all crucial data into the csv file. Path cost is also stored for the traversal between divisions
 and the shelves. Next, the shortest and longest path will be retrieved from the csv file, and the average too.
+
+###################################################################
+Phase 3  Cont'd:
+The csv functions and files are done. It creates multiple csvs to end with two sorted csv files. The first csv file "sorted"
+is used to find the average, shortest, and longest path in the warehouse/division scores. The second csv "sorted2" is used
+for the same purpose except to print out average, shortest and longest for shelves paths. Final result pictured below.
+
+![Screenshot (15)](https://user-images.githubusercontent.com/56514179/137240655-33a1ff95-ab7d-4bdf-a65b-a30990be8fee.png)
