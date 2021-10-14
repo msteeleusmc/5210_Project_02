@@ -2,6 +2,7 @@ from collections import defaultdict
 import random
 import csv
 import os
+import pandas as pd
 
 class Warehouse:
 
@@ -252,6 +253,18 @@ class Orders:
 
         return order_size, order_division, shelf_array;
 
+#######################################################################
+#                      Global CSV Functions
+#######################################################################
+def findAverage():
+    pass
+
+def findLongestPath():
+    pass
+
+def findShortestPath():
+    pass
+
 
 #######################################################################
 #                          Main function
@@ -268,8 +281,6 @@ if __name__ == '__main__':
     while count in range (0, 100):
         # orders creates a customer order instance
         orders = Orders(1)
-        # order array will be used to track which shelves are in the division
-        order_array = []
         # return values to know the size, division , and shelves for the order
         order_size, order_division, order_array = orders.createOrder()
         order_array.sort()
@@ -365,3 +376,77 @@ if __name__ == '__main__':
 
         # Increase the count
         count += 1
+
+    # Copy csv to another for the following
+    df = pd.read_csv('customer_order.csv')
+    df.to_csv('copy_' + 'customer_order.csv')
+
+    # Read the data from the new csv and then sort
+    df = pd.read_csv('copy_customer_order.csv')
+    sorted_df = df.sort_values(by=['Warehouse Path Cost'], ascending=True)
+    sorted_df.to_csv('sorted.csv', index=False)
+
+    # Find the average warehouse path from the csv
+    path_data = pd.read_csv('sorted.csv')
+    # Find the number of rows in the csv
+    num_rows = len(path_data.index)
+    # Divide by 2 then subtract 1
+    num_rows = num_rows / 2
+    num_rows -= 1
+    # Convert back to int
+    num_rows = int(num_rows)
+    # Find the average path in the sorted csv with the converted int as the index
+    warehouse_avg = path_data['Warehouse Path'].iloc[num_rows]
+
+    print("Warehouse Average Path:\n")
+    print(warehouse_avg)
+    print()
+
+    # Find the shortest warehouse path from the csv
+    shortest_path = path_data['Warehouse Path'].iloc[0]
+
+    print("Warehouse Shortest Path:\n")
+    print(shortest_path)
+    print()
+
+    # Find longest warehouse path from the csv
+    longest_path = path_data['Warehouse Path'].iloc[-1]
+
+    print("Warehouse Longest Path:\n")
+    print(longest_path)
+    print()
+
+    # Re-sort the csv for shelf path
+    df = pd.read_csv('sorted.csv')
+    sorted_df = df.sort_values(by=['Shelf Path Cost'], ascending=True)
+    sorted_df.to_csv('sorted2.csv', index=False)
+
+    # Find the average shelf path from the csv
+    path_data = pd.read_csv('sorted2.csv')
+    # Find the number of rows in the csv
+    num_rows = len(path_data.index)
+    # Divide by 2 then subtract 1
+    num_rows = num_rows / 2
+    num_rows -= 1
+    # Convert back to int
+    num_rows = int(num_rows)
+    # Find the average path in the sorted csv with the converted int as the index
+    shelf_avg = path_data['Shelf Path'].iloc[num_rows]
+
+    print("Shelf Average Path:\n")
+    print(shelf_avg)
+    print()
+
+    # Find the shortest shelf path from the csv
+    shortest_path = path_data['Shelf Path'].iloc[0]
+
+    print("Shelf Shortest Path:\n")
+    print(shortest_path)
+    print()
+
+    # Find the longest shelf path from the csv
+    longest_path = path_data['Shelf Path'].iloc[-1]
+
+    print("Shelf Longest Path:\n")
+    print(longest_path)
+    print()
