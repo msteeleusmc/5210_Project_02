@@ -51,3 +51,13 @@ is used to find the average, shortest, and longest path in the warehouse/divisio
 for the same purpose except to print out average, shortest and longest for shelves paths. Final result pictured below.
 
 ![Screenshot (15)](https://user-images.githubusercontent.com/56514179/137240655-33a1ff95-ab7d-4bdf-a65b-a30990be8fee.png)
+
+###################################################################
+Question 5 - Project 02
+
+Attached is a screen shot for the division path form division 1 to 
+division 6, and the cost for the traversal. Also, in the screen shot
+is the traversal from shelf 1 to 33 and returning to 1 with the count 
+including exiting the division.
+
+![Question_05](https://user-images.githubusercontent.com/56514179/137604638-60c3241e-688c-416e-a667-512579a57a04.png)
