@@ -277,6 +277,93 @@ if __name__ == '__main__':
     warehouse_root = 1
     shelf_root = 1
 
+    # For question 5 go from division 1 to division 6
+    # then go to shelf 33
+    while count in range (0, 1):
+        print("Running test program for Question 5:\n")
+        orders = Orders(1)
+
+        warehouse = Warehouse(16)
+
+        warehouse.createGraph()
+
+        source = 1
+        target = 6
+        maxDepth = 4
+
+        # run the IDS algorithm to see if the target can be reached
+        # from the current source node
+        warehousePath = warehouse.IDS(source, target, maxDepth)
+
+        # create a shelves object
+        shelves = Shelves(64)
+        # create a shelf layout for the current division
+        shelves.createGraph()
+
+        # the shelf root always begins at 1 and updates based on filling the array
+        shelf_source = 1
+        # the target will be an item in the order array
+        shelf_target = 0
+        # the depth will be 6 for 63 nodes
+        shelf_depth = 6
+
+        endShelves = False
+        newPath = []
+
+        shelf_target = 33
+        # Using the same IDS algorithm as before
+        shelfPath = shelves.shelvesIDS(shelf_source, shelf_target, shelf_depth)
+        newPath = newPath + shelfPath
+
+        shelf_source = shelf_target
+        shelfPath = shelves.shelvesIDS(shelf_source, 1, shelf_depth)
+        newPath = newPath + shelfPath
+
+        temp = len(newPath) - 1
+        while temp > 0:
+            if newPath[temp] == newPath[temp - 1]:
+                newPath.remove(newPath[temp])
+                temp = len(newPath) - 1
+            else:
+                temp -= 1
+
+        # Create a copy of the current warehouse path
+        tempWareHousePath = warehousePath.copy()
+
+        # Create a list object to store a list of weights
+        pathWeights = []
+        w_cost = 0
+
+        # While-loop will iterate through the new list creating tuples
+        while len(tempWareHousePath) > 1:
+            pathWeights.append([tempWareHousePath[0], tempWareHousePath[1]])
+            tempWareHousePath.pop(0)
+
+        # Call function to return the total path cost for the divisions
+        w_cost = warehouse.getCost(pathWeights, w_cost)
+
+        print("\n\nQuestion 5:")
+        print("\tThe path from Division 1 to Division 6 is:\n")
+        print("\t",warehousePath)
+        print("\tWith a cost of: ", w_cost)
+        print()
+        print("\tThe path from shelf 1 to shelf 33 is:\n")
+        print("\t",newPath)
+        print("\tWith a cost of: ",len(newPath)+1)
+        print("#####################################")
+        print("End of this test")
+        print("\n\n\n\n")
+
+
+        count += 1
+
+    # Return count to zero
+    count = 0
+    # root is the starting node. It will update as the robot
+    # transistions the warehouse with a new starting node
+    warehouse_root = 1
+    shelf_root = 1
+
     # This while-loop runs until 100 customer orders are completed
     while count in range (0, 100):
         # orders creates a customer order instance
@@ -355,7 +442,7 @@ if __name__ == '__main__':
 
         # Create data structures for the csv file
         header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Warehouse Path Cost', 'Shelf Path', 'Shelf Path Cost']
-        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, w_cost, newPath, len(newPath)]
+        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, w_cost, newPath, len(newPath) + 1]
         csv_path = "customer_order.csv"
 
         # Write to the csv file
@@ -397,23 +484,35 @@ if __name__ == '__main__':
     num_rows = int(num_rows)
     # Find the average path in the sorted csv with the converted int as the index
     warehouse_avg = path_data['Warehouse Path'].iloc[num_rows]
+    warehouse_avg_cost = path_data['Warehouse Path Cost'].iloc[num_rows]
 
-    print("Warehouse Average Path:\n")
+    print("Division Average Path:")
     print(warehouse_avg)
+    print()
+    print("Division Average Path Cost:")
+    print(warehouse_avg_cost)
     print()
 
     # Find the shortest warehouse path from the csv
     shortest_path = path_data['Warehouse Path'].iloc[0]
+    shortest_path_cost = path_data['Warehouse Path Cost'].iloc[0]
 
-    print("Warehouse Shortest Path:\n")
+    print("Division Shortest Path:")
     print(shortest_path)
+    print()
+    print("Division Shortest Path Cost:")
+    print(shortest_path_cost)
     print()
 
     # Find longest warehouse path from the csv
     longest_path = path_data['Warehouse Path'].iloc[-1]
+    longest_path_cost = path_data['Warehouse Path Cost'].iloc[-1]
 
-    print("Warehouse Longest Path:\n")
+    print("Division Longest Path:")
     print(longest_path)
+    print()
+    print("Division Longest Path Cost:")
+    print(longest_path_cost)
     print()
 
     # Re-sort the csv for shelf path
@@ -432,21 +531,32 @@ if __name__ == '__main__':
     num_rows = int(num_rows)
     # Find the average path in the sorted csv with the converted int as the index
     shelf_avg = path_data['Shelf Path'].iloc[num_rows]
+    shelf_avg_cost = path_data['Shelf Path Cost'].iloc[num_rows]
 
-    print("Shelf Average Path:\n")
+    print("Shelf Average Path:")
     print(shelf_avg)
     print()
+    print("Shelf Average Path Cost:")
+    print(shelf_avg_cost)
 
     # Find the shortest shelf path from the csv
     shortest_path = path_data['Shelf Path'].iloc[0]
+    shortest_path_cost = path_data['Shelf Path Cost'].iloc[0]
 
-    print("Shelf Shortest Path:\n")
+    print("Shelf Shortest Path:")
     print(shortest_path)
+    print()
+    print("Shelf Shortest Path Cost:")
+    print(shortest_path_cost)
     print()
 
     # Find the longest shelf path from the csv
     longest_path = path_data['Shelf Path'].iloc[-1]
+    longest_path_cost = path_data['Shelf Path Cost'].iloc[-1]
 
-    print("Shelf Longest Path:\n")
+    print("Shelf Longest Path:")
     print(longest_path)
+    print()
+    print("Shelf Longest Path Cost:")
+    print(longest_path_cost)
     print()
