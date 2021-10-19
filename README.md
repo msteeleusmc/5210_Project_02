@@ -1,3 +1,8 @@
+TO RUN THIS PROGRAM, DOWNLOAD AND SAVE TO YOUR WORKING DIRECTORY.
+
+TO RUN TYPE "python main.py" WITHOUT THE ""
+
+
 # 5210_Project_02
 Iterative Deeping Search (IDS)
 
