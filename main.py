@@ -135,7 +135,7 @@ class Shelves:
     def __init__(self, nodes):
         # Define the number of divisions 1 - 15
         self.V = nodes
-        # default dictionary to store graph/tree of warehouse
+        # default dictionary to store graph/tree of shelves
         self.shelves = defaultdict(list)
 
     # Function will add edges to the graph and their weights
