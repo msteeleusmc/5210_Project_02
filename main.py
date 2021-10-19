@@ -440,9 +440,13 @@ if __name__ == '__main__':
         # Call function to return the total path cost for the divisions
         w_cost = warehouse.getCost(pathWeights, w_cost)
 
+        # Combine division and shelf paths
+        combined_path = warehousePath.copy() + newPath.copy()
+        combined_path_cost = w_cost + len(newPath) + 1
+
         # Create data structures for the csv file
-        header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Warehouse Path', 'Warehouse Path Cost', 'Shelf Path', 'Shelf Path Cost']
-        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, w_cost, newPath, len(newPath) + 1]
+        header = ['Order Size', 'Order Division', 'Current Position', 'Shelves', 'Division Path', 'Division Path Cost', 'Shelf Path', 'Shelf Path Cost', 'Total Path', 'Total Path Cost']
+        data = [order_size, order_division, warehousePath[0], order_array, warehousePath, w_cost, newPath, len(newPath) + 1, combined_path, combined_path_cost]
         csv_path = "customer_order.csv"
 
         # Write to the csv file
@@ -470,43 +474,64 @@ if __name__ == '__main__':
 
     # Read the data from the new csv and then sort
     df = pd.read_csv('copy_customer_order.csv')
-    sorted_df = df.sort_values(by=['Warehouse Path Cost'], ascending=True)
-    sorted_df.to_csv('sorted.csv', index=False)
+    sorted_df = df.sort_values(by=['Division Path Cost'], ascending=True)
+    sorted_df.to_csv('division_sorted.csv', index=False)
 
-    # Find the average warehouse path from the csv
-    path_data = pd.read_csv('sorted.csv')
+    # Find the average division path length from the csv
+    path_data = pd.read_csv('division_sorted.csv')
     # Find the number of rows in the csv
     num_rows = len(path_data.index)
-    # Divide by 2 then subtract 1
-    num_rows = num_rows / 2
-    num_rows -= 1
-    # Convert back to int
-    num_rows = int(num_rows)
-    # Find the average path in the sorted csv with the converted int as the index
-    warehouse_avg = path_data['Warehouse Path'].iloc[num_rows]
-    warehouse_avg_cost = path_data['Warehouse Path Cost'].iloc[num_rows]
 
-    print("Division Average Path:")
-    print(warehouse_avg)
+    len_list = []
+    for i in range(0,num_rows):
+        temp_var = path_data['Division Path'].iloc[i]
+        len_list.append(len(temp_var) - 2)
+
+    len_list.sort()
+
+    list_sum = 0
+    for i in len_list:
+        list_sum += i
+
+    division_average = list_sum / len(len_list)
+
+    len_list = []
+    for i in range(0, num_rows):
+        temp_var = path_data['Division Path Cost'].iloc[i]
+        len_list.append(temp_var)
+
+    len_list.sort()
+
+    list_sum = 0
+    for i in len_list:
+        list_sum += i
+
+    division_average_cost = list_sum / len(len_list)
+
+    print("Division Average Path Length:")
+    print(division_average)
     print()
     print("Division Average Path Cost:")
-    print(warehouse_avg_cost)
+    print(division_average_cost)
     print()
 
     # Find the shortest warehouse path from the csv
-    shortest_path = path_data['Warehouse Path'].iloc[0]
-    shortest_path_cost = path_data['Warehouse Path Cost'].iloc[0]
+    shortest_path = path_data['Division Path'].iloc[0]
+    shortest_path_cost = path_data['Division Path Cost'].iloc[0]
 
     print("Division Shortest Path:")
     print(shortest_path)
+    print()
+    print("Division Shortest Path Length:")
+    print(len(shortest_path))
     print()
     print("Division Shortest Path Cost:")
     print(shortest_path_cost)
     print()
 
     # Find longest warehouse path from the csv
-    longest_path = path_data['Warehouse Path'].iloc[-1]
-    longest_path_cost = path_data['Warehouse Path Cost'].iloc[-1]
+    longest_path = path_data['Division Path'].iloc[-1]
+    longest_path_cost = path_data['Division Path Cost'].iloc[-1]
 
     print("Division Longest Path:")
     print(longest_path)
@@ -516,28 +541,47 @@ if __name__ == '__main__':
     print()
 
     # Re-sort the csv for shelf path
-    df = pd.read_csv('sorted.csv')
+    df = pd.read_csv('division_sorted.csv')
     sorted_df = df.sort_values(by=['Shelf Path Cost'], ascending=True)
-    sorted_df.to_csv('sorted2.csv', index=False)
+    sorted_df.to_csv('shelf_sorted.csv', index=False)
 
     # Find the average shelf path from the csv
-    path_data = pd.read_csv('sorted2.csv')
+    path_data = pd.read_csv('shelf_sorted.csv')
     # Find the number of rows in the csv
     num_rows = len(path_data.index)
-    # Divide by 2 then subtract 1
-    num_rows = num_rows / 2
-    num_rows -= 1
-    # Convert back to int
-    num_rows = int(num_rows)
-    # Find the average path in the sorted csv with the converted int as the index
-    shelf_avg = path_data['Shelf Path'].iloc[num_rows]
-    shelf_avg_cost = path_data['Shelf Path Cost'].iloc[num_rows]
 
-    print("Shelf Average Path:")
-    print(shelf_avg)
+    len_list = []
+    for i in range(0, num_rows):
+        temp_var = path_data['Shelf Path'].iloc[i]
+        len_list.append(len(temp_var) - 2)
+
+    len_list.sort()
+
+    list_sum = 0
+    for i in len_list:
+        list_sum += i
+
+    shelf_average = list_sum / len(len_list)
+
+    len_list = []
+    for i in range(0, num_rows):
+        temp_var = path_data['Shelf Path Cost'].iloc[i]
+        len_list.append(temp_var)
+
+    len_list.sort()
+
+    list_sum = 0
+    for i in len_list:
+        list_sum += i
+
+    shelf_average_cost = list_sum / len(len_list)
+
+    print("Shelf Average Path Length:")
+    print(shelf_average)
     print()
     print("Shelf Average Path Cost:")
-    print(shelf_avg_cost)
+    print(shelf_average_cost)
+    print()
 
     # Find the shortest shelf path from the csv
     shortest_path = path_data['Shelf Path'].iloc[0]
@@ -558,5 +602,70 @@ if __name__ == '__main__':
     print(longest_path)
     print()
     print("Shelf Longest Path Cost:")
+    print(longest_path_cost)
+    print()
+
+    # Re-sort the csv for shelf path
+    df = pd.read_csv('division_sorted.csv')
+    sorted_df = df.sort_values(by=['Total Path Cost'], ascending=True)
+    sorted_df.to_csv('total_sorted.csv', index=False)
+
+    # Find the average shelf path from the csv
+    path_data = pd.read_csv('total_sorted.csv')
+    # Find the number of rows in the csv
+    num_rows = len(path_data.index)
+
+    len_list = []
+    for i in range(0, num_rows):
+        temp_var = path_data['Total Path'].iloc[i]
+        len_list.append(len(temp_var) - 2)
+
+    len_list.sort()
+
+    list_sum = 0
+    for i in len_list:
+        list_sum += i
+
+    total_average = list_sum / len(len_list)
+
+    len_list = []
+    for i in range(0, num_rows):
+        temp_var = path_data['Total Path Cost'].iloc[i]
+        len_list.append(temp_var)
+
+    len_list.sort()
+
+    list_sum = 0
+    for i in len_list:
+        list_sum += i
+
+    total_average_cost = list_sum / len(len_list)
+
+    print("Combined Average Path Length:")
+    print(total_average)
+    print()
+    print("Combined Average Path Cost:")
+    print(total_average_cost)
+    print()
+
+    # Find the shortest shelf path from the csv
+    shortest_path = path_data['Total Path'].iloc[0]
+    shortest_path_cost = path_data['Total Path Cost'].iloc[0]
+
+    print("Combined Shortest Path:")
+    print(shortest_path)
+    print()
+    print("Combined Shortest Path Cost:")
+    print(shortest_path_cost)
+    print()
+
+    # Find the longest shelf path from the csv
+    longest_path = path_data['Total Path'].iloc[-1]
+    longest_path_cost = path_data['Total Path Cost'].iloc[-1]
+
+    print("Combined Longest Path:")
+    print(longest_path)
+    print()
+    print("Combined Longest Path Cost:")
     print(longest_path_cost)
     print()
